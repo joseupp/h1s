@@ -153,6 +153,13 @@ namespace dvars
 		{
 			set_overrides[game::dvar_type::string][name].string = value;
 		}
+
+		static std::unordered_map<std::string, float> scale_float_overrides;
+
+		void scale_float(const std::string& name, const float factor)
+		{
+			scale_float_overrides[name] = factor;
+		}
 	}
 
 	namespace callback
@@ -195,6 +202,16 @@ namespace dvars
 			min = var->limits.value.min;
 			max = var->limits.value.max;
 			flags = var->flags;
+		}
+
+		if (const auto* factor = find_dvar(override::scale_float_overrides, hash))
+		{
+			value *= *factor;
+			max *= *factor;
+			if (max < value)
+			{
+				max = value;
+			}
 		}
 	}
 

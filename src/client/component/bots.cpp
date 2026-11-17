@@ -7,6 +7,7 @@
 #include "network.hpp"
 #include "party.hpp"
 #include "scripting.hpp"
+#include "lobby_bots.hpp"
 
 #include "game/game.hpp"
 #include "game/scripting/execution.hpp"
@@ -77,7 +78,7 @@ namespace bots
 
 		void load_bot_data()
 		{
-			static const char* bots_txt = "h1-mod/bots.txt";
+			static const char* bots_txt = "h1s/bots.txt";
 
 			std::string bots_content;
 			if (!utils::io::read_file(bots_txt, &bots_content))
@@ -100,6 +101,14 @@ namespace bots
 
 		const char* get_random_bot_name()
 		{
+			// Bots de la partida que vienen de la sala pública: el nombre del bot de la sala (lobby_bots.cpp)
+			if (const auto lobby_name = lobby_bots::take_match_bot_name())
+			{
+				static std::string name{};
+				name = *lobby_name;
+				return name.data();
+			}
+
 			if (bot_names.empty())
 			{
 				load_bot_data();

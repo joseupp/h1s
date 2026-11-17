@@ -14,6 +14,7 @@ namespace demonware
 		void steamProcessDurable(service_server* server, byte_buffer* buffer) const;
 		void purchaseSkus(service_server* server, byte_buffer* buffer) const;
 		void getBalance(service_server* server, byte_buffer* buffer) const;
+		void getBalanceV2(service_server* server, byte_buffer* buffer) const;
 		void getInventoryPaginated(service_server* server, byte_buffer* buffer) const;
 		void putPlayersInventoryItems(service_server* server, byte_buffer* buffer) const;
 		void getEntitlements(service_server* server, byte_buffer* buffer) const;

@@ -245,12 +245,35 @@ namespace fastfiles
 			return handle;
 		}
 
+		// Nombre del mapa a partir del archivo (mapa.ff, mapa_load.ff, mapa.pak)
+		std::string get_usermap_name_from_file(const std::string& file)
+		{
+			for (const auto* suffix : {"_load.ff", ".ff", ".pak"})
+			{
+				const std::string ending = suffix;
+				if (file.size() > ending.size() && file.ends_with(ending))
+				{
+					return file.substr(0, file.size() - ending.size());
+				}
+			}
+
+			return {};
+		}
+
 		HANDLE find_usermap(const std::string& mapname)
 		{
-			const auto usermap = fastfiles::get_current_usermap();
-			if (!usermap.has_value())
+			auto usermap = fastfiles::get_current_usermap();
+			const auto name = get_usermap_name_from_file(mapname);
+			if (!usermap.has_value() || usermap.value() != name)
 			{
-				return INVALID_HANDLE_VALUE;
+				// Partida lanzada desde la sala: el mapa no pasa por SV_SpawnServer antes de cargar sus archivos
+				if (name.empty() || !utils::io::file_exists(utils::string::va("usermaps\\%s\\%s", name.data(), mapname.data())))
+				{
+					return INVALID_HANDLE_VALUE;
+				}
+
+				fastfiles::set_usermap(name);
+				usermap = name;
 			}
 
 			const auto& usermap_value = usermap.value();

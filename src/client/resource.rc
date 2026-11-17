@@ -70,15 +70,15 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName", "H1-Mod"
-            VALUE "FileDescription", "H1-Mod"
+            VALUE "CompanyName", "H1S"
+            VALUE "FileDescription", "H1S"
             VALUE "FileVersion", VERSION_FILE
-            VALUE "InternalName", "H1-Mod"
+            VALUE "InternalName", "H1S"
             VALUE "LegalCopyright", "Copyright © 2024 Aurora. All rights reserved."
             VALUE "Licence", "GPLv3"
             VALUE "Info", "https://auroramod.dev"
-            VALUE "OriginalFilename", "h1-mod.exe"
-            VALUE "ProductName", "h1-mod"
+            VALUE "OriginalFilename", "h1s.exe"
+            VALUE "ProductName", "h1s"
             VALUE "ProductVersion", VERSION_PRODUCT
         END
     END
@@ -102,7 +102,6 @@ DW_FASTFILE           RCDATA "resources/dw/ffotd-1.15.1.ff"
 DW_MOTD               RCDATA "resources/dw/motd-english.txt"
 DW_PLAYLISTS          RCDATA "resources/dw/playlists_tu12.aggr"
 
-MENU_MAIN             RCDATA "resources/main.html"
 
 #ifdef _DEBUG
 TLS_DLL               RCDATA "../../build/bin/x64/Debug/tlsdll.dll"

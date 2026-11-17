@@ -22,6 +22,24 @@ namespace patches
 {
 	namespace
 	{
+		// Escala del rango, icono y nombre sobre el jugador (como en BO3)
+		constexpr auto overhead_scale = 1.5f;
+
+		// El número de rango sobre el jugador usa un 0.5 fijo (cg_overheadRankSize no se lee):
+		// se escala con cg_overheadRankSize respecto a su valor original
+		float overhead_rank_text_scale_stub(void* font, const float scale)
+		{
+			static const auto* rank_size = game::Dvar_FindVar("cg_overheadRankSize");
+
+			auto factor = overhead_scale;
+			if (rank_size && rank_size->reset.value > 0.0f)
+			{
+				factor = overhead_scale * rank_size->current.value / rank_size->reset.value;
+			}
+
+			return utils::hook::invoke<float>(0x67F610_b, font, scale * factor); // R_NormalizedTextScale
+		}
+
 		const char* live_get_local_client_name()
 		{
 			return game::Dvar_FindVar("name")->current.string;
@@ -364,6 +382,16 @@ namespace patches
 				}, scheduler::pipeline::main);
 			}
 
+			// Rango, icono y nombre sobre el jugador más grandes (como en BO3)
+			dvars::override::scale_float("cg_overheadNamesSize", overhead_scale);
+			dvars::override::scale_float("cg_overheadRankSize", overhead_scale);
+			dvars::override::scale_float("cg_overheadIconSize", overhead_scale);
+			if (game::environment::is_mp())
+			{
+				utils::hook::call(0xF7DDD_b, overhead_rank_text_scale_stub); // CG_DrawOverheadNames: texto secundario (0.5 fijo)
+				utils::hook::call(0xF7DF8_b, overhead_rank_text_scale_stub); // CG_DrawOverheadNames: número de rango (0.45 fijo)
+			}
+
 			// Set compassSize dvar minimum to 0.1
 			dvars::override::register_float("compassSize", 1.0f, 0.1f, 50.0f, game::DVAR_FLAG_SAVED);
 
@@ -509,7 +537,7 @@ namespace patches
 			utils::hook::call(0x1CBD06_b, sv_execute_client_message_stub);
 
 			// Change default hostname and make it replicated
-			dvars::override::register_string("sv_hostname", "^2H1-Mod^7 Default Server", game::DVAR_FLAG_REPLICATED);
+			dvars::override::register_string("sv_hostname", "^2H1S^7 Default Server", game::DVAR_FLAG_REPLICATED);
 
 			// Dont free server/client memory on asset loading (fixes crashing on map rotation)
 			utils::hook::nop(0x132474_b, 5);

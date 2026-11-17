@@ -1,9 +1,7 @@
 #include <std_include.hpp>
 
 #include "component/motd.hpp"
-#include "component/scheduler.hpp"
 
-#include <utils/http.hpp>
 #include "../services.hpp"
 
 namespace demonware
@@ -21,12 +19,12 @@ namespace demonware
 
 		int message_id = 1;
 		const auto featured_content = motd::get_featured_content();
-		for (const auto& [key, value] : featured_content)
+		for (const auto& value : featured_content)
 		{
 			const auto marketing_message = new bdMarketingMessage;
 			marketing_message->m_messageID = message_id;
 			marketing_message->m_languageCode = "en-US";
-			marketing_message->m_content = value.buffer;
+			marketing_message->m_content = value;
 			marketing_message->m_metadata = "{}";
 			reply->add(marketing_message);
 			++message_id;

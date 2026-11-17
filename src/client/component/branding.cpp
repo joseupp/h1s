@@ -25,7 +25,7 @@ namespace branding
 		const char* ui_get_formatted_build_number_stub()
 		{
 			const auto build_num = ui_get_formatted_build_number_hook.invoke<const char*>();
-			return utils::string::va("%s (%s)", VERSION, build_num);
+			return utils::string::va("%s (%s)", SHORTVERSION, build_num);
 		}
 
 		void draw_branding()
@@ -44,7 +44,7 @@ namespace branding
 #ifdef _DEBUG
 			const auto text = "h1-mod: " VERSION " (" __DATE__ " " __TIME__ ")";
 #else
-			const auto text = "h1-mod: " VERSION;
+			const auto text = "h1s: " SHORTVERSION;
 #endif
 
 			const auto placement = game::ScrPlace_GetViewPlacement();

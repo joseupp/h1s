@@ -9,11 +9,38 @@ namespace resources
 		HICON icon;
 		HANDLE splash, logo;
 
+		// Imagen de arranque original del juego: el juego la carga de sus recursos (bitmap 100), pero el exe del juego
+		// está cargado a mano por h1s y LoadImageA no la encuentra ahí. Se lee del propio h1_mp64_ship.exe
+		HMODULE game_resources{};
+
+		HMODULE get_game_resources()
+		{
+			if (!game_resources)
+			{
+				game_resources = LoadLibraryExA("h1_mp64_ship.exe", nullptr,
+					LOAD_LIBRARY_AS_DATAFILE | LOAD_LIBRARY_AS_IMAGE_RESOURCE);
+			}
+
+			return game_resources;
+		}
+
 		HANDLE WINAPI load_image_a(const HINSTANCE handle, LPCSTR name, const UINT type, const int c_x, const int c_y,
 			const UINT load)
 		{
 			const utils::nt::library self;
 			if (!IS_INTRESOURCE(name) && name == "logo.bmp"s) return logo;
+
+			if (name == LPCSTR(0x64) && type == IMAGE_BITMAP)
+			{
+				if (auto* const resources = get_game_resources())
+				{
+					if (auto* const image = LoadImageA(resources, name, type, c_x, c_y, load))
+					{
+						return image;
+					}
+				}
+			}
+
 			if (self.get_handle() == handle && name == LPCSTR(0x64)) return splash;
 
 			return LoadImageA(handle, name, type, c_x, c_y, load);
@@ -33,6 +60,7 @@ namespace resources
 	public:
 		~component() override
 		{
+			if (game_resources) FreeLibrary(game_resources);
 			if (icon) DestroyIcon(icon);
 			if (logo) DeleteObject(logo);
 			if (splash) DeleteObject(splash);

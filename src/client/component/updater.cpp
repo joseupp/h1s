@@ -30,7 +30,7 @@
 #define ERR_DOWNLOAD_FAIL "Failed to download file %s:\n%s"
 #define ERR_WRITE_FAIL "Failed to write file "
 
-#define BINARY_NAME "h1-mod.exe"
+#define BINARY_NAME "h1s.exe"
 
 namespace updater
 {
@@ -354,7 +354,7 @@ namespace updater
 #ifdef _DEBUG
 		return false;
 #else
-		return cl_auto_update->current.enabled;
+		return cl_auto_update && cl_auto_update->current.enabled; // el componente puede estar desactivado
 #endif
 	}
 
@@ -631,4 +631,4 @@ namespace updater
 	};
 }
 
-REGISTER_COMPONENT(updater::component)
+//REGISTER_COMPONENT(updater::component)

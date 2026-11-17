@@ -1,0 +1,12 @@
+{
+    "action_title": "Local match",
+    "title": "<h2>Local match</h2>",
+    "image": "h1_motd_360x200_mp_crash",
+    "content_short": "",
+    "content_long": "<body>^2Local match^7 with bots that join the lobby like real players.<br/><br/>- Bots, mode and options in ^3Game Setup^7<br/>- Free-for-all modes default to 8 players<br/>- Press ^2Start Game^7 when you are ready</body>",
+    "popup_action_title": "Press ^2[ESC]^7 or ^2[ENTER]^7 to close",
+    "popup_action": "",
+    "popup_image": "h1_motd_620x580_mp_crash",
+    "action": "popup",
+    "noHtml": false
+}

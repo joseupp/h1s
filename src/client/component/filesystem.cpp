@@ -45,8 +45,8 @@ namespace filesystem
 
 			initialized = true;
 
-			register_path(utils::properties::get_appdata_path() / CLIENT_DATA_FOLDER);
-			register_path(L"h1-mod");
+			// Solo la carpeta del juego h1s (ni AppData ni h1-mod)
+			register_path(L"h1s");
 			register_path(L"raw");
 			register_path(L"main");
 

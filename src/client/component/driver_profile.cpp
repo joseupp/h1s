@@ -2,7 +2,7 @@
 
 	AMD's DirectX11 driver amdxx64.dll applies game app profiles based on the process executable name, which includes weird visual 
 	fixes and performance issues that do not apply otherwise. this component exists to pretty much spoof the name to AMD's driver 
-	as h1_mp64_ship.exe & h1_sp64_ship.exe instead of h1-mod.exe
+	as h1_mp64_ship.exe & h1_sp64_ship.exe instead of h1s.exe
 
 */
 

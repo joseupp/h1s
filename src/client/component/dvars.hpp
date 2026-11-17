@@ -17,6 +17,9 @@ namespace dvars
 		void set_float(const std::string& name, float fl);
 		void set_int(const std::string& name, int integer);
 		void set_string(const std::string& name, const std::string& string);
+
+		// Multiplica el valor por defecto (y el máximo) que registra el juego
+		void scale_float(const std::string& name, float factor);
 	}
 
 	namespace callback

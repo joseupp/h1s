@@ -1,0 +1,12 @@
+{
+    "action_title": "Custom textures",
+    "title": "<h2>Custom textures</h2>",
+    "image": "h1_motd_dlc_360x200_ch_mtx6_kits",
+    "content_short": "",
+    "content_long": "<body>Images in ^3h1s/images^7 replace the game ones with the same name.<br/><br/>- 3D textures and UI icons<br/>- This panel is read from ^3h1s/marketing^7</body>",
+    "popup_action_title": "Press ^2[ESC]^7 or ^2[ENTER]^7 to close",
+    "popup_action": "",
+    "popup_image": "h1_motd_dlc_620x580_ch_mtx6_kits",
+    "action": "popup",
+    "noHtml": false
+}

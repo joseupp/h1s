@@ -249,11 +249,11 @@ namespace steam
 			if (::utils::nt::is_wine())
 			{
 				// let's check the registry to see if the user has already manually selected the Steam installation path
-				if (RegOpenKeyExA(HKEY_CURRENT_USER, "Software\\h1-mod", 0, KEY_QUERY_VALUE, &steam_install_reg) 
+				if (RegOpenKeyExA(HKEY_CURRENT_USER, "Software\\h1s", 0, KEY_QUERY_VALUE, &steam_install_reg) 
 					!= ERROR_SUCCESS)
 				{
 					// create a registry key
-					if (RegCreateKeyExA(HKEY_CURRENT_USER, "Software\\h1-mod", 0, nullptr, 0, KEY_WRITE, nullptr, &steam_install_reg, nullptr) 
+					if (RegCreateKeyExA(HKEY_CURRENT_USER, "Software\\h1s", 0, nullptr, 0, KEY_WRITE, nullptr, &steam_install_reg, nullptr) 
 						!= ERROR_SUCCESS)
 					{
 						MSG_BOX_ERROR("Could not create registry for Steam install path.");
@@ -268,7 +268,7 @@ namespace steam
 						open_folder_prompt(directory_ptr);
 					}
 
-					// if the directory pointer is defined, then we set "steam_install" inside "Software\\h1-mod" to the path
+					// if the directory pointer is defined, then we set "steam_install" inside "Software\\h1s" to the path
 					if (RegSetKeyValueA(steam_install_reg, nullptr, "steam_install", REG_SZ, ::utils::string::va("\"%s\"", path), length) != ERROR_SUCCESS)
 					{
 						MSG_BOX_ERROR("Failed to set valid Steam install path in registry, please try again.");
@@ -276,7 +276,7 @@ namespace steam
 					}
 				}
 
-				// query "steam_install" inside "Software\\h1-mod" which will define our path variable
+				// query "steam_install" inside "Software\\h1s" which will define our path variable
 				RegQueryValueExA(steam_install_reg, "steam_install", nullptr, nullptr, reinterpret_cast<BYTE*>(path), &length);
 				install_path = path;
 				RegCloseKey(steam_install_reg);

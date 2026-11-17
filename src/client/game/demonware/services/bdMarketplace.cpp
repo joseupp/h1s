@@ -13,6 +13,7 @@ namespace demonware
 		this->register_task(60, &bdMarketplace::steamProcessDurable);
 		this->register_task(122, &bdMarketplace::purchaseSkus);
 		this->register_task(130, &bdMarketplace::getBalance);
+		this->register_task(132, &bdMarketplace::getBalanceV2);
 		this->register_task(165, &bdMarketplace::getInventoryPaginated);
 		this->register_task(193, &bdMarketplace::putPlayersInventoryItems);
 		this->register_task(232, &bdMarketplace::getEntitlements);
@@ -58,6 +59,13 @@ namespace demonware
 		// TODO:
 		auto reply = server->create_reply(this->task_id());
 
+		reply->send();
+	}
+
+	void bdMarketplace::getBalanceV2(service_server* server, byte_buffer* /*buffer*/) const
+	{
+		// Saldo de moneda (offline: respuesta vacía, como getBalance)
+		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
 

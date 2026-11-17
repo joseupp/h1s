@@ -36,6 +36,19 @@ function vertonumarr(value, vernumber, partscount)
 	return vernum
 end
 
+-- Número de revisión propio (r1000, r1001...): se lee de revision.txt y se sube a mano en cada cambio.
+-- Las letras detrás del número son la fase (b = beta): "1000b" -> r1000b
+function readrevision()
+	local file = io.open(path.join(_MAIN_SCRIPT_DIR, "revision.txt"), "r")
+	if file == nil then
+		return 1000, ""
+	end
+	local content = file:read("*a") or ""
+	file:close()
+	local number, suffix = string.match(content, "(%d+)(%a*)")
+	return tonumber(number) or 1000, suffix or ""
+end
+
 dependencies = {
 	basePath = "./deps"
 }
@@ -108,6 +121,7 @@ newaction {
 	onWorkspace = function(wks)
 		-- get old version number from version.hpp if any
 		local oldVersion = "(none)"
+		local oldRevision = "(none)"
 		local oldVersionHeader = io.open(wks.location .. "/src/version.h", "r")
 		if oldVersionHeader ~= nil then
 			local oldVersionHeaderContent = assert(oldVersionHeader:read('*l'))
@@ -115,6 +129,11 @@ newaction {
 				m = string.match(oldVersionHeaderContent, "#define GIT_DESCRIBE (.+)%s*$")
 				if m ~= nil then
 						oldVersion = m
+				end
+
+				m = string.match(oldVersionHeaderContent, "#define REVISION_STRING \"(.-)\"")
+				if m ~= nil then
+					oldRevision = m
 				end
 
 				oldVersionHeaderContent = oldVersionHeader:read('*l')
@@ -128,7 +147,9 @@ newaction {
 
 		-- generate version.hpp with a revision number if not equal
 		gitDescribeOutputQuoted = cstrquote(gitDescribeOutput)
-		if oldVersion ~= gitDescribeOutputQuoted then
+		local revision, revisionSuffix = readrevision()
+		local revisionString = "r" .. revision .. revisionSuffix
+		if oldVersion ~= gitDescribeOutputQuoted or oldRevision ~= revisionString then
 			-- get current git hash and write to version.txt (used by the preliminary updater)
 			-- TODO - remove once proper updater and release versioning exists
 			local proc = assert(io.popen("git rev-parse HEAD", "r"))
@@ -169,7 +190,7 @@ newaction {
 			local proc = assert(io.popen("git rev-list --count HEAD", "r"))
 			local revNumber = assert(proc:read('*a')):gsub("%s+", "")
 
-			print ("Update " .. oldVersion .. " -> " .. gitDescribeOutputQuoted)
+			print ("Update " .. oldVersion .. " -> " .. gitDescribeOutputQuoted .. " (" .. revisionString .. ")")
 
 			-- write to version.txt for preliminary updater
 			-- NOTE - remove this once we have a proper updater and proper release versioning
@@ -190,15 +211,19 @@ newaction {
 			versionHeader:write("#define GIT_TAG " .. cstrquote(tagName) .. "\n")
 			versionHeader:write("#define GIT_BRANCH " .. cstrquote(branchName) .. "\n")
 			versionHeader:write("\n")
+			versionHeader:write("// Revision number (revision.txt)\n")
+			versionHeader:write("#define REVISION " .. revision .. "\n")
+			versionHeader:write("#define REVISION_STRING " .. cstrquote(revisionString) .. "\n")
+			versionHeader:write("\n")
 			versionHeader:write("// Version transformed for RC files\n")
-			versionHeader:write("#define VERSION_PRODUCT_RC " .. table.concat(vertonumarr(tagName, revNumber, 3), ",") .. "\n")
-			versionHeader:write("#define VERSION_PRODUCT " .. cstrquote(table.concat(vertonumarr(tagName, revNumber, 3), ".")) .. "\n")
-			versionHeader:write("#define VERSION_FILE_RC " .. table.concat(vertonumarr(tagName, revNumber, 4), ",") .. "\n")
-			versionHeader:write("#define VERSION_FILE " .. cstrquote(table.concat(vertonumarr(tagName, revNumber, 4), ".")) .. "\n")
+			versionHeader:write("#define VERSION_PRODUCT_RC " .. revision .. ",0,0,0\n")
+			versionHeader:write("#define VERSION_PRODUCT REVISION_STRING\n")
+			versionHeader:write("#define VERSION_FILE_RC " .. revision .. ",0,0,0\n")
+			versionHeader:write("#define VERSION_FILE REVISION_STRING\n")
 			versionHeader:write("\n")
 			versionHeader:write("// Alias definitions\n")
-			versionHeader:write("#define VERSION GIT_DESCRIBE\n")
-			versionHeader:write("#define SHORTVERSION VERSION_PRODUCT\n")
+			versionHeader:write("#define VERSION REVISION_STRING\n")
+			versionHeader:write("#define SHORTVERSION REVISION_STRING\n")
 			versionHeader:close()
 			local versionHeader = assert(io.open(wks.location .. "/src/version.hpp", "w"))
 			versionHeader:write("/*\n")
@@ -219,7 +244,7 @@ newaction {
 
 dependencies.load()
 
-workspace "h1-mod"
+workspace "h1s"
 startproject "client"
 location "./build"
 objdir "%{wks.location}/obj"
@@ -279,10 +304,12 @@ resincludedirs {"$(ProjectDir)src"}
 dependencies.imports()
 
 project "client"
-kind "ConsoleApp"
+-- Aplicación de ventana: sin la consola externa de Windows al arrancar (como en iw7s)
+kind "WindowedApp"
+entrypoint "mainCRTStartup"
 language "C++"
 
-targetname "h1-mod"
+targetname "h1s"
 
 pchheader "std_include.hpp"
 pchsource "src/client/std_include.cpp"
@@ -290,6 +317,9 @@ pchsource "src/client/std_include.cpp"
 linkoptions {"/IGNORE:4254", "/DYNAMICBASE:NO", "/SAFESEH:NO", "/LARGEADDRESSAWARE", "/PDBCompress"}
 
 files {"./src/client/**.rc", "./src/client/**.hpp", "./src/client/**.cpp", "./src/client/resources/**.*"}
+
+-- Sin launcher: arranca directamente el multijugador (main.cpp)
+removefiles {"./src/client/launcher/**.cpp", "./src/client/resources/main.html"}
 
 includedirs {"./src/client", "./src/common", "%{prj.location}/src"}
 
@@ -309,7 +339,7 @@ if os.getenv("AURORAH1_GAME_PATH") then
 	debugdir "$(AURORAH1_GAME_PATH)"
 	debugcommand "$(AURORAH1_GAME_PATH)\\$(TargetName)$(TargetExt)"
 	postbuildcommands {
-		"echo Copying to Aurora H1-mod game path...",
+		"echo Copying to h1s game path...",
 		"copy /y \"$(OutDir)$(TargetName)$(TargetExt)\" \"$(AURORAH1_GAME_PATH)\\$(TargetName)$(TargetExt)\""
 	}
 end
@@ -344,7 +374,13 @@ display "Protobuf compiler"
 location "./build"
 fileExtension ".proto"
 buildmessage "Compiling %(Identity) with protoc..."
+-- protoc genera en una carpeta temporal y solo se copia a src\\proto lo que cambia: si se reescribe siempre,
+-- auth.pb.h (incluido en std_include.hpp) invalida la cabecera precompilada y se recompila todo el cliente
 buildcommands {'@echo off', 'path "$(SolutionDir)\\..\\tools"',
 			   'if not exist "$(ProjectDir)\\src\\proto" mkdir "$(ProjectDir)\\src\\proto"',
-			   'protoc --error_format=msvs -I=%(RelativeDir) --cpp_out=src\\proto %(Identity)'}
+			   'if not exist "$(IntDir)proto" mkdir "$(IntDir)proto"',
+			   'protoc --error_format=msvs -I=%(RelativeDir) --cpp_out="$(IntDir)proto" %(Identity) || exit /b 1',
+			   'fc /b "$(IntDir)proto\\%(Filename).pb.h" "src\\proto\\%(Filename).pb.h" >nul 2>&1 || copy /y "$(IntDir)proto\\%(Filename).pb.h" "src\\proto\\" >nul',
+			   'fc /b "$(IntDir)proto\\%(Filename).pb.cc" "src\\proto\\%(Filename).pb.cc" >nul 2>&1 || copy /y "$(IntDir)proto\\%(Filename).pb.cc" "src\\proto\\" >nul',
+			   'exit /b 0'}
 buildoutputs {'$(ProjectDir)\\src\\proto\\%(Filename).pb.cc', '$(ProjectDir)\\src\\proto\\%(Filename).pb.h'}

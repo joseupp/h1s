@@ -712,6 +712,22 @@ namespace ui_scripting
 			lua["table"]["unpack"] = lua["unpack"];
 			lua["luiglobals"] = lua;
 
+			// Arreglos de la VM de partida (sin LUI.mp_menus); antes en ui_scripts\combat_training\__init__.lua
+			if (!game::environment::is_sp() && !lua["LUI"]["mp_menus"].is<table>())
+			{
+				// Ping del host en vez de la mediana
+				lua["GetLobbyPingType"] = []()
+				{
+					return 3;
+				};
+
+				// Evita el cierre del juego por el estado de inactividad al hacer alt+tab
+				lua["GetMatchmakingState"] = []()
+				{
+					return 0;
+				};
+			}
+
 			load_script("lui_common", lui_common);
 			load_script("lui_updater", lui_updater);
 			load_script("lua_json", lua_json);

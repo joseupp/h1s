@@ -1,0 +1,12 @@
+{
+    "action_title": "Map voting",
+    "title": "<h2>Map voting</h2>",
+    "image": "h1_motd_360x200_mp_countdown",
+    "content_short": "",
+    "content_long": "<body>If you don't pick a map, the lobby votes like the original public matches.<br/><br/>- Maps rotate between matches<br/>- Bots vote too<br/>- Pick a map in ^3Game Setup^7 to keep it</body>",
+    "popup_action_title": "Press ^2[ESC]^7 or ^2[ENTER]^7 to close",
+    "popup_action": "",
+    "popup_image": "h1_motd_620x580_mp_countdown",
+    "action": "popup",
+    "noHtml": false
+}

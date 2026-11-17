@@ -355,8 +355,14 @@ namespace console
 
 		void post_unpack() override
 		{
+			// Aplicación de ventana: sin consola externa (la consola del juego sigue funcionando)
+			if (!GetConsoleWindow())
+			{
+				return;
+			}
+
 			ShowWindow(GetConsoleWindow(), SW_SHOW);
-			SetConsoleTitle("H1-Mod: " VERSION);
+			SetConsoleTitle("H1S: " VERSION);
 
 			con.kill_event = CreateEvent(NULL, TRUE, FALSE, NULL);
 
