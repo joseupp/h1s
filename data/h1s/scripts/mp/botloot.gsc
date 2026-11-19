@@ -1,3 +1,8 @@
+// botloot.gsc - from "h1botusemore 2.0" by botnok/kinaria
+// Allows bots to use camos, furniture kits, DLC weapons and reticles.
+// Original: https://discord.com/channels/945420505157083208/1193940039743307848/1404853074840912024
+// All credit for this script goes to its author.
+
 #include maps\mp\bots\_bots;
 #include maps\mp\bots\_bots_loadout;
 main()

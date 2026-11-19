@@ -51,6 +51,7 @@ The output executable is `h1s.exe`. Only x64 is supported. The `h1s` folder of t
 - **[joseupp](https://github.com/joseupp) and Claude (Anthropic)**: H1s.
 - [H1-Mod][h1mod-link] (AuroraMod): the client it is based on.
 - [s1-mod](https://git.alterware.dev/alterware/s1-mod), [h2-mod](https://github.com/alicealys/h2-mod) and [momo5502](https://github.com/momo5502): codebase and research.
+- **botnok/kinaria**: `botloot.gsc`, from the "h1botusemore 2.0" mod (bots use camos, furniture kits, DLC weapons and reticles), shared on [Discord](https://discord.com/channels/945420505157083208/1193940039743307848/1404853074840912024).
 
 ## Disclaimer
 
